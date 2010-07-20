@@ -8,9 +8,5 @@ set -e
 set -u
 
 source spec/setup.sh
-execute_manifest <<EOF
-\$foo = 'abc'
-if \$foo != regsubst(\$foo,'abc','def') {
-  notify { 'foo': }
-}
-EOF
+
+which puppet
