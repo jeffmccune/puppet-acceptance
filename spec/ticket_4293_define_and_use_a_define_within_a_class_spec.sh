@@ -8,12 +8,13 @@
 # Description: using a defined type in the class it's declared in
 # causes an error.
 #
-# 
 
 set -u
 source spec/setup.sh
 
-execute_manifest cat <<'PP' | grep -q a_message_for_you
+OUTPUT="/tmp/puppet-$$.out"
+
+execute_manifest <<'PP' >"${OUTPUT}"
 class foo {
   define do_notify($msg) {
     notify { "Message for $name: $msg": }
@@ -22,9 +23,8 @@ class foo {
 }
 include foo
 PP
-rval=$?
 
-if [ "$rval" -eq "0" ]; then
+if egrep -q '^notice.*?Foo::Do_notify.*?a_message_for_you' "${OUTPUT}" ; then
   exit $EXIT_OK
 else
   exit $EXIT_FAILURE
