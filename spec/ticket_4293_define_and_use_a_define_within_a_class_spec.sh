@@ -11,10 +11,11 @@
 
 set -u
 source spec/setup.sh
-set -e
 
 OUTPUT=/tmp/puppet-$$.output
 MANIFEST=/tmp/puppet-$$-master/manifests/site.pp
+
+trap '{ test -n "${master_pid:-}" && kill "${master_pid}" ; }' EXIT
 
 driver_master_and_agent_locally_using_old_executables
 
@@ -58,6 +59,7 @@ start_puppetd
 
 killwait ${master_pid}
 
+trap '' EXIT
 if grep -q a_message_for_you "${OUTPUT}"; then
   exit $EXIT_OK
 else
